@@ -42,7 +42,7 @@ namespace TestMode
                 if (ped.LastVehicle != null)
                 {
                     ped.Task.EnterVehicle(ped.LastVehicle, VehicleSeat.Driver);
-                    ped.Task.DriveTo(ped.LastVehicle, player.GetOffsetPosition(new Vector3(0, -5, 0)), 5, 250);
+                    ped.Task.DriveTo(ped.LastVehicle, player.GetOffsetPosition(new Vector3(0, -5, 0)), 2, 250);
                 }
             }
         }
@@ -118,7 +118,7 @@ namespace TestMode
             player.PedGroup.Add(ped, false);
             ped.NeverLeavesGroup = true;
             ped.Weapons.Give(WeaponHash.APPistol, 1000, true, true);
-            ped.DrivingStyle = DrivingStyle.Rushed;
+            ped.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
             assignPedToVeachleIfThereIs(ped);
 
 

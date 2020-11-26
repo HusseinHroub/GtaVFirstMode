@@ -9,6 +9,7 @@ namespace TestMode
 {
     public class Main : Script
     {
+        //test
         ArrayList peds = new ArrayList();
         ArrayList vehicles = new ArrayList();
         Hashtable vehiclesWithPeds = new Hashtable();

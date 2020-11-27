@@ -112,7 +112,7 @@ namespace TestMode
             }
             else if (e.KeyCode == Keys.NumPad5)
             {
-                CreateCar();
+                CreateVehicale();
             }
         }
 
@@ -121,9 +121,9 @@ namespace TestMode
             vehiclesWithPeds.Clear();
         }
 
-        private void CreateCar()
+        private void CreateVehicale()
         {
-            vehicles.Add(World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0))));
+            vehicles.Add(World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading - 180));
         }
 
         private void deleteAllCars()

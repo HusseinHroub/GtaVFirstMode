@@ -28,6 +28,23 @@ namespace TestMode
             {
                 i = 0;
                 PedsDriveOnPlayerDrive();
+                foreach (Vehicle v in World.GetAllVehicles())
+                {
+                    bool canBeDeleted = true;
+                    foreach (Vehicle vMyWorld in vehicles)
+                    {
+                        if(v.Equals(vMyWorld))
+                        {
+                            canBeDeleted = false;
+                            break;
+                        }
+                    }
+                    if(canBeDeleted)
+                    {
+                        v.Delete();
+
+                    }
+                }
             }
             
 
@@ -38,24 +55,35 @@ namespace TestMode
             foreach (Ped ped in peds)
             {
 
-                if ((player.VehicleTryingToEnter != null || player.IsInVehicle()))
+                if (player.VehicleTryingToEnter != null || player.IsInVehicle() || (distanceToPlayer(ped) > 25 && distanceStraight(ped) > 25))
                 {
                     PedDriveIfHaveVehicle(ped);
                 }
                 else
                 {
-                    PedLeaveVehicle(ped);
+                    leaveVehicle(ped);
                 }
             }
         }
 
-        private static void PedLeaveVehicle(Ped ped)
+        private float distanceStraight(Ped ped)
+        {
+            return World.GetDistance(ped.Position, player.Position);
+        }
+
+        private  void leaveVehicle(Ped ped)
         {
             if (ped.IsInVehicle())
             {
+                GTA.UI.Notification.Show("Ped is in veichale and must leave");
                 ped.Task.LeaveVehicle();
             }
 
+        }
+
+        private float distanceToPlayer(Ped ped)
+        {
+            return World.CalculateTravelDistance(ped.Position, player.Position);
         }
 
         private void PedDriveIfHaveVehicle(Ped ped)
@@ -78,13 +106,13 @@ namespace TestMode
 
         private void DrivePedBehindPlayer(Ped ped, Vehicle vehicle)
         {
-            ped.Task.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, -5, 0)), 2, 250);
+            ped.Task.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, -2, 0)), 2, 70);
         }
 
         private void InitPlayer()
         {
             player = Game.Player.Character;
-            player.PedGroup.Formation = Formation.Line;
+            player.PedGroup.Formation = Formation.Default;
         }
 
         private void onKeyDown(object sender, KeyEventArgs e)
@@ -102,9 +130,9 @@ namespace TestMode
             }
             else if(e.KeyCode == Keys.NumPad6)
             {
-                foreach(Ped ped in peds)
+                foreach(Entity entity in World.GetAllVehicles())
                 {
-                    PedDriveIfHaveVehicle(ped);
+                    entity.Delete();
                 }
             }
             else if (e.KeyCode == Keys.NumPad5)
@@ -120,7 +148,8 @@ namespace TestMode
 
         private void CreateVehicale()
         {
-            vehicles.Add(World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading - 180));
+            vehicles.Add(World.CreateVehicle(VehicleHash.Adder,player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading - 180));
+            
         }
 
         private void deleteAllCars()

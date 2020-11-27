@@ -12,6 +12,7 @@ namespace TestMode
         ArrayList peds = new ArrayList();
         ArrayList vehicles = new ArrayList();
         Hashtable vehiclesWithPeds = new Hashtable();
+        int i = 0;
         Ped player;
         public Main()
         {
@@ -22,7 +23,13 @@ namespace TestMode
 
         private void tick(object sender, EventArgs e)
         {
-            PedsDriveOnPlayerDrive();
+            i++;
+            if ( i > 1)
+            {
+                i = 0;
+                PedsDriveOnPlayerDrive();
+            }
+            
 
         }
 
@@ -31,7 +38,7 @@ namespace TestMode
             foreach (Ped ped in peds)
             {
 
-                if (player.VehicleTryingToEnter != null || player.IsInVehicle())
+                if ((player.VehicleTryingToEnter != null || player.IsInVehicle()))
                 {
                     PedDriveIfHaveVehicle(ped);
                 }
@@ -48,6 +55,7 @@ namespace TestMode
             {
                 ped.Task.LeaveVehicle();
             }
+
         }
 
         private void PedDriveIfHaveVehicle(Ped ped)
@@ -55,7 +63,19 @@ namespace TestMode
             if (vehiclesWithPeds.Contains(ped))
             {
                 Vehicle vehicle = (Vehicle)vehiclesWithPeds[ped];
-                DrivePedBehindPlayer(ped, vehicle);
+                if (ped.IsInVehicle())
+                {
+                    GTA.UI.Notification.Show("lol exactly bro");
+                    ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver);
+                    DrivePedBehindPlayer(ped, vehicle);
+                }
+                else if (ped.VehicleTryingToEnter == null)
+                {
+                    GTA.UI.Notification.Show("Okay, ped going to vehivle");
+                    ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver);
+                    DrivePedBehindPlayer(ped, vehicle);
+                }
+
             }
         }
 
@@ -82,6 +102,13 @@ namespace TestMode
                 clearHashTable();
                 deleteAllPeds();
                 deleteAllCars();
+            }
+            else if(e.KeyCode == Keys.NumPad6)
+            {
+                foreach(Ped ped in peds)
+                {
+                    PedDriveIfHaveVehicle(ped);
+                }
             }
             else if (e.KeyCode == Keys.NumPad5)
             {

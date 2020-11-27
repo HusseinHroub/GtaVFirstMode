@@ -9,9 +9,11 @@ namespace TestMode
 {
     public class Main : Script
     {
+        //test
         ArrayList peds = new ArrayList();
         ArrayList vehicles = new ArrayList();
         Hashtable vehiclesWithPeds = new Hashtable();
+        int i = 0;
         Ped player;
         public Main()
         {
@@ -22,46 +24,38 @@ namespace TestMode
 
         private void tick(object sender, EventArgs e)
         {
-                PedsDriveOnPlayerDrive();
-            
+            ++i;
+            //AttackJackTarget();
+            if (i > 1)
+            {
+                i = 0;
+                assingDriveToTaskToPeds();
+            }
+
         }
 
-        private void PedsDriveOnPlayerDrive()
+        private void assingDriveToTaskToPeds()
         {
             foreach (Ped ped in peds)
             {
-                
-                if (player.VehicleTryingToEnter != null || player.IsInVehicle())
+
+                if (ped.LastVehicle != null)
                 {
-                    PedDriveIfHaveVehicle(ped);
-                }
-                else
-                {
-                    PedLeaveVehicle(ped);
+                    ped.Task.EnterVehicle(ped.LastVehicle, VehicleSeat.Driver);
+                    ped.Task.DriveTo(ped.LastVehicle, player.GetOffsetPosition(new Vector3(0, -5, 0)), 2, 250);
                 }
             }
         }
 
-        private static void PedLeaveVehicle(Ped ped)
+        private void AttackJackTarget()
         {
-            if (ped.IsInVehicle())
+            if (player.JackTarget != null)
             {
-                ped.Task.LeaveVehicle();
+                foreach (Ped ped in peds)
+                {
+                    ped.Task.FightAgainst(player.JackTarget);
+                }
             }
-        }
-
-        private void PedDriveIfHaveVehicle(Ped ped)
-        {
-            if (vehiclesWithPeds.Contains(ped))
-            {
-                Vehicle vehicle = (Vehicle)vehiclesWithPeds[ped];
-                DrivePedBehindPlayer(ped, vehicle);
-            }
-        }
-
-        private void DrivePedBehindPlayer(Ped ped, Vehicle vehicle)
-        {
-            ped.Task.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, -5, 0)), 2, 250);
         }
 
         private void InitPlayer()
@@ -77,11 +71,15 @@ namespace TestMode
                 InitSetup();
                 CreatePed();
             }
-            else if(e.KeyCode == Keys.NumPad9)
+            else if (e.KeyCode == Keys.NumPad9)
             {
                 clearHashTable();
                 deleteAllPeds();
                 deleteAllCars();
+            }
+            else if (e.KeyCode == Keys.NumPad6)
+            {
+                assingDriveToTaskToPeds();
             }
             else if (e.KeyCode == Keys.NumPad5)
             {
@@ -101,7 +99,7 @@ namespace TestMode
 
         private void deleteAllCars()
         {
-            foreach(Vehicle vehicle in vehicles)
+            foreach (Vehicle vehicle in vehicles)
             {
                 vehicle.Delete();
             }
@@ -123,6 +121,7 @@ namespace TestMode
             ped.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
             assignPedToVeachleIfThereIs(ped);
 
+
         }
 
         private void assignPedToVeachleIfThereIs(Ped ped)
@@ -131,14 +130,27 @@ namespace TestMode
             if (vehicle != null)
             {
                 vehiclesWithPeds.Add(vehicle, ped);
-                vehiclesWithPeds.Add(ped, vehicle);
+                //ped.Task.PerformSequence(GetVeheccleTasks(ped, vehicle));
+                ped.Task.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, 10, 0)), 5, 20);
             }
         }
+
+        private TaskSequence GetVeheccleTasks(Ped ped, Vehicle vehicle)
+        {
+            TaskSequence taskSequence = new TaskSequence();
+            //taskSequence.AddTask.GoTo(player.GetOffsetPosition(new Vector3(0, 20, 0)));
+            //taskSequence.AddTask.GoTo(player.GetOffsetPosition(new Vector3(0, 0, 0)));
+
+            //taskSequence.AddTask.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, 80, 0)), 10, 20);
+            taskSequence.AddTask.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, 0, 0)), 10, 20);
+            return taskSequence;
+        }
+
         private Vehicle getEmptyCar()
         {
-            foreach(Vehicle vehicle in vehicles)
+            foreach (Vehicle vehicle in vehicles)
             {
-               if(!vehiclesWithPeds.Contains(vehicle))
+                if (!vehiclesWithPeds.Contains(vehicle))
                 {
                     return vehicle;
                 }
@@ -148,7 +160,7 @@ namespace TestMode
 
         private void deleteAllPeds()
         {
-            foreach(Ped ped in peds)
+            foreach (Ped ped in peds)
             {
                 ped.Delete();
             }

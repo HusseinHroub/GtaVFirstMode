@@ -65,14 +65,11 @@ namespace TestMode
                 Vehicle vehicle = (Vehicle)vehiclesWithPeds[ped];
                 if (ped.IsInVehicle())
                 {
-                    GTA.UI.Notification.Show("lol exactly bro");
                     ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver);
                     DrivePedBehindPlayer(ped, vehicle);
                 }
                 else if (ped.VehicleTryingToEnter == null)
                 {
-                    GTA.UI.Notification.Show("Okay, ped going to vehivle");
-                    ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver);
                     DrivePedBehindPlayer(ped, vehicle);
                 }
 

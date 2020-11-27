@@ -54,10 +54,16 @@ namespace TestMode
         {
             if (vehiclesWithPeds.Contains(ped))
             {
-                Vehicle vehicle = (Vehicle) vehiclesWithPeds[ped];
-                ped.Task.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, -5, 0)), 2, 250);
+                Vehicle vehicle = (Vehicle)vehiclesWithPeds[ped];
+                DrivePedBehindPlayer(ped, vehicle);
             }
         }
+
+        private void DrivePedBehindPlayer(Ped ped, Vehicle vehicle)
+        {
+            ped.Task.DriveTo(vehicle, player.GetOffsetPosition(new Vector3(0, -5, 0)), 2, 250);
+        }
+
         private void InitPlayer()
         {
             player = Game.Player.Character;

@@ -63,11 +63,11 @@ namespace GtaVFirstMode
                 {
                     VehicleUtilty.makePedToLeaveVehicle(ped);
                 }
+            }
 
-                if (waitingTimeForSorting > 200)
-                {
-                    waitingTimeForSorting = 0;
-                }
+            if (waitingTimeForSorting > 200)
+            {
+                waitingTimeForSorting = 0;
             }
         }
 
@@ -143,18 +143,23 @@ namespace GtaVFirstMode
             }
         }
 
-        //this is performance killed cuz of sorting.
         private void StealClosestVehicle(Ped ped)
         {
             List<Vehicle> closestVehiclesToPed = VehicleUtilty.getClosestVehiclesToPed(ped);
             foreach (Vehicle vehicle in closestVehiclesToPed)
             {
+                GTA.UI.Notification.Show("vehicle hashcode: " + vehicle.GetHashCode());
+                GTA.UI.Notification.Show("ped hashcode: " + ped.GetHashCode());
                 if (isPedAllowedToStealVehicle(ped, vehicle))
-                {                   
-                        AddVehicleToPedTryingToEnterVehicles(ped, vehicle);
+                {       
+                   AddVehicleToPedTryingToEnterVehicles(ped, vehicle);
+                    if(!vehicle.Equals(ped.VehicleTryingToEnter))
+                    {
                         ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30, EnterVehicleFlags.AllowJacking);
-                        break;
-                 
+                    }
+                    break;
+                    
+                        
                 }
             }
 
@@ -164,16 +169,19 @@ namespace GtaVFirstMode
         {
             if (tryingToEnterVehclesWithPeds.ContainsKey(ped))
             {
+                tryingToEnterVehclesWithPeds.Remove(tryingToEnterVehclesWithPeds[ped]);
                 tryingToEnterVehclesWithPeds.Remove(ped);
             }
             tryingToEnterVehclesWithPeds.Add(ped, vehicle);
+            tryingToEnterVehclesWithPeds.Add(vehicle, ped);
         }
 
         private bool isPedAllowedToStealVehicle(Ped ped, Vehicle vehicle)
         {
             return vehicle != null &&
                 !player.Equals(vehicle.Driver) &&
-                !pedsAndVehicleManagment.getVehiclesWithPeds().Contains(vehicle);
+                !pedsAndVehicleManagment.getVehiclesWithPeds().Contains(vehicle) &&
+                (!tryingToEnterVehclesWithPeds.Contains(vehicle) || vehicle.Equals(tryingToEnterVehclesWithPeds[ped]));
         }
 
         private void InitSetup()

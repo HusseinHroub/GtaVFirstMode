@@ -148,17 +148,14 @@ namespace GtaVFirstMode
             List<Vehicle> closestVehiclesToPed = VehicleUtilty.getClosestVehiclesToPed(ped);
             foreach (Vehicle vehicle in closestVehiclesToPed)
             {
-                GTA.UI.Notification.Show("vehicle hashcode: " + vehicle.GetHashCode());
-                GTA.UI.Notification.Show("ped hashcode: " + ped.GetHashCode());
                 if (isPedAllowedToStealVehicle(ped, vehicle))
-                {       
-                   AddVehicleToPedTryingToEnterVehicles(ped, vehicle);
-                    if(!vehicle.Equals(ped.VehicleTryingToEnter))
+                {
+                    if (!vehicle.Equals(ped.VehicleTryingToEnter))
                     {
+                        AddVehicleToPedTryingToEnterVehicles(ped, vehicle);
                         ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30, EnterVehicleFlags.AllowJacking);
                     }
                     break;
-                    
                         
                 }
             }

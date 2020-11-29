@@ -74,7 +74,7 @@ namespace GtaVFirstMode
                 }
                 else if (ped.VehicleTryingToEnter == null)
                 {
-                    VehicleUtilty.DrivePedBehindPlayer(ped, vehicle);
+                    ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30);
                 }
                 return true;
             }

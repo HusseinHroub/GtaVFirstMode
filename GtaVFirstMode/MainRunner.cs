@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using GTA;
 using System.Collections;
 using GtaVFirstMode.utilites;
+using System.Collections.Generic;
 
 namespace GtaVFirstMode
 {
@@ -145,14 +146,15 @@ namespace GtaVFirstMode
         //this is performance killed cuz of sorting.
         private void StealClosestVehicle(Ped ped)
         {
-            Vehicle[] closestVehiclesToPed = VehicleUtilty.getClosestVehiclesToPed(ped);
+            List<Vehicle> closestVehiclesToPed = VehicleUtilty.getClosestVehiclesToPed(ped);
             foreach (Vehicle vehicle in closestVehiclesToPed)
             {
                 if (isPedAllowedToStealVehicle(ped, vehicle))
-                {
-                    AddVehicleToPedTryingToEnterVehicles(ped, vehicle);
-                    ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30, EnterVehicleFlags.AllowJacking);
-                    break;
+                {                   
+                        AddVehicleToPedTryingToEnterVehicles(ped, vehicle);
+                        ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30, EnterVehicleFlags.AllowJacking);
+                        break;
+                 
                 }
             }
 
@@ -171,8 +173,7 @@ namespace GtaVFirstMode
         {
             return vehicle != null &&
                 !player.Equals(vehicle.Driver) &&
-                !pedsAndVehicleManagment.getVehiclesWithPeds().Contains(vehicle) &&
-                !vehicle.Equals(tryingToEnterVehclesWithPeds[ped]);
+                !pedsAndVehicleManagment.getVehiclesWithPeds().Contains(vehicle);
         }
 
         private void InitSetup()

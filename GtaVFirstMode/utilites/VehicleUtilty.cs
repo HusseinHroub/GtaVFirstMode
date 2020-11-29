@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using GTA;
 using GTA.Math;
 
@@ -31,10 +33,14 @@ namespace GtaVFirstMode.utilites
 
         }
 
-        public static Vehicle[] getClosestVehiclesToPed(Ped ped)
+        public static List<Vehicle> getClosestVehiclesToPed(Ped ped)
         {
-            Vehicle[] closesVehicles = World.GetNearbyVehicles(ped.Position, 300);
-            Array.Sort(closesVehicles, new Sorter(ped));
+            List<Vehicle> closesVehicles = new List<Vehicle>(World.GetNearbyVehicles(ped.Position, 300));
+            if(ped.VehicleTryingToEnter != null)
+            {
+                closesVehicles.Add(ped.VehicleTryingToEnter);
+            }
+            closesVehicles.Sort(new Sorter(ped));
             return closesVehicles;
         }
     }

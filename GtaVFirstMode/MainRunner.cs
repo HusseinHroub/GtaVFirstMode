@@ -95,9 +95,10 @@ namespace GtaVFirstMode
         private void StealVhiecleAndAssignIt(Ped ped)
         {
             StealClosestVehicle(ped);
-            if (ped.IsInVehicle())
+            if (ped.IsGettingIntoVehicle)
             {
-                pedsAndVehicleManagment.addVehicaleAndAssignItToPed(ped, ped.CurrentVehicle);
+                GTA.UI.Screen.ShowSubtitle("Ped IsGettingIntoVehicle!");
+                pedsAndVehicleManagment.addVehicaleAndAssignItToPed(ped, ped.VehicleTryingToEnter);
                 
             }
         }
@@ -140,6 +141,10 @@ namespace GtaVFirstMode
             else if (e.KeyCode == Keys.NumPad5)
             {
                 pedsAndVehicleManagment.CreateVehicale();
+            }
+            else if(e.KeyCode == Keys.NumPad4)
+            {
+                VehicleUtilty.createVehicle().LockStatus = VehicleLockStatus.CanBeBrokenInto;
             }
         }
 

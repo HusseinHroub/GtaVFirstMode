@@ -22,10 +22,16 @@ namespace GtaVFirstMode
             Ped ped = World.CreatePed(PedHash.Security01SMM, player.GetOffsetPosition(new Vector3(0, 7, 0)));
             peds.Add(ped);
             player.PedGroup.Add(ped, false);
+            setPedCharatersitcs(ped);
+            return ped;
+        }
+
+        private static void setPedCharatersitcs(Ped ped)
+        {
             ped.NeverLeavesGroup = true;
             ped.Weapons.Give(WeaponHash.APPistol, 1000, true, true);
             ped.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
-            return ped;
+            ped.CanBeDraggedOutOfVehicle = false;
         }
 
         public ArrayList getPeds()

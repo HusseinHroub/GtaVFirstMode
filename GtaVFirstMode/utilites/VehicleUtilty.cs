@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿
 using System.Collections.Generic;
 using GTA;
 using GTA.Math;
@@ -22,12 +21,15 @@ namespace GtaVFirstMode.utilites
 
         public static Vehicle createVehicle()
         {
-            return World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading - 180);
+            Vehicle vehicle = World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading - 180);
+            LoggerUtil.logInfo("Created vehcile that has hashCode: " + vehicle.GetHashCode());
+            return vehicle;
         }
         public static void makePedToLeaveVehicle(Ped ped)
         {
             if (ped.IsInVehicle())
             {
+                LoggerUtil.logInfo(ped, "ped shall leave vehicle") ;
                 ped.Task.LeaveVehicle();
             }
 
@@ -41,6 +43,7 @@ namespace GtaVFirstMode.utilites
                 closesVehicles.Add(ped.VehicleTryingToEnter);
             }
             closesVehicles.Sort(new Sorter(ped));
+            LoggerUtil.logInfo(ped, "Got closest vehicle to peds, the number of closest vehicle is: " + closesVehicles.Count);
             return closesVehicles;
         }
     }

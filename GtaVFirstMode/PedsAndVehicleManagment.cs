@@ -20,6 +20,7 @@ namespace GtaVFirstMode
         }
         public bool assignPedToVeachleIfThereIs(Ped ped)
         {
+            LoggerUtil.logInfo(ped, "Start assigning ped to vehicle: ");
             Vehicle vehicle = getEmptyVehicle();
             if (vehicle != null)
             {
@@ -35,6 +36,7 @@ namespace GtaVFirstMode
         {
             vehiclesWithPeds.Add(vehicle, ped);
             vehiclesWithPeds.Add(ped, vehicle);
+            LoggerUtil.logInfo(ped, "Succesfully assigned ped to vehicle with hascode: " + vehicle.GetHashCode());
         }
         public Vehicle getEmptyVehicle()
         {
@@ -42,6 +44,7 @@ namespace GtaVFirstMode
             {
                 if (isVehicleConsideredEmpty(vehicle))
                 {
+                    LoggerUtil.logInfo("Found empty vehicle with hashcode: " + vehicle.GetHashCode());
                     return vehicle;
                 }
             }
@@ -67,6 +70,7 @@ namespace GtaVFirstMode
             if (vehiclesWithPeds.Contains(ped))
             {
                 Vehicle vehicle = (Vehicle)vehiclesWithPeds[ped];
+                LoggerUtil.logInfo(ped, "Ped own vehicle: " + vehicle.GetHashCode() + " and will drive.");
                 if (ped.IsInVehicle())
                 {
                     ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver);
@@ -95,6 +99,7 @@ namespace GtaVFirstMode
 
         public void addVehicaleAndAssignItToPed(Ped ped, Vehicle currentVehicle)
         {
+            LoggerUtil.logInfo(ped, "Addeing vehicle to ped: " + currentVehicle.GetHashCode());
             vehicles.Add(currentVehicle);
             assignPedToVehicle(ped, currentVehicle);
         }
@@ -104,6 +109,7 @@ namespace GtaVFirstMode
             Vehicle vehicle = player.CurrentVehicle;
             if (vehicle != null && vehiclesWithPeds.Contains(vehicle))
             {
+                LoggerUtil.logInfo("This vehicle: " + vehicle.GetHashCode() + " is now taken by player");
                 removeRelationIfHaveOwner(vehicle);
             }
         }
@@ -112,6 +118,7 @@ namespace GtaVFirstMode
             Ped ownerOfThisVehicle = (Ped)vehiclesWithPeds[vehicle];
             if (ownerOfThisVehicle != null)
             {
+                LoggerUtil.logInfo(ownerOfThisVehicle, "This vehicle: " + vehicle.GetHashCode() + " is removed from ped");
                 vehiclesWithPeds.Remove(ownerOfThisVehicle);
                 vehiclesWithPeds.Remove(vehicle);
             }

@@ -15,6 +15,8 @@ namespace GtaVFirstMode
         int i = 0;
         int waitingTimeForSorting = 0;
         Ped player;
+
+
         public Main()
         {
             InitPlayer();
@@ -57,6 +59,7 @@ namespace GtaVFirstMode
             {
                 if(IfAllowedToDrive(ped))
                 {
+                    LoggerUtil.logInfo(ped, "Ped is allowed drive, searching for vehicle to drive.");
                     ForcePedToDriveAVehicle(ped);
                 }
                 else
@@ -94,15 +97,26 @@ namespace GtaVFirstMode
 
         private void StealVhiecleAndAssignIt(Ped ped)
         {
+            LoggerUtil.logInfo(ped, "Starting stealing some vehicles!");
             StealClosestVehicle(ped);
-            if (ped.IsGettingIntoVehicle)
+            if (IsPedAlloedToAssignVehicle(ped))
             {
-                GTA.UI.Screen.ShowSubtitle("Ped IsGettingIntoVehicle!");
-                pedsAndVehicleManagment.addVehicaleAndAssignItToPed(ped, ped.VehicleTryingToEnter);
-                
+                pedsAndVehicleManagment.addVehicaleAndAssignItToPed(ped, (Vehicle) tryingToEnterVehclesWithPeds[ped]);
+                if (ped.VehicleTryingToEnter.Driver != null)
+                {
+                    ped.VehicleTryingToEnter.Driver.Task.FleeFrom(ped);
+                    LoggerUtil.logInfo(ped, "Driver should flee from the ped!");
+
+                }
+
             }
         }
-        
+
+        private bool IsPedAlloedToAssignVehicle(Ped ped)
+        {
+            return ped.IsGettingIntoVehicle && ped.VehicleTryingToEnter != null && !player.Equals(ped.VehicleTryingToEnter.Driver);
+        }
+
         private float distanceStraight(Ped ped)
         {
             return World.GetDistance(ped.Position, player.Position);
@@ -146,6 +160,14 @@ namespace GtaVFirstMode
             {
                 VehicleUtilty.createVehicle().LockStatus = VehicleLockStatus.CanBeBrokenInto;
             }
+            else if(e.KeyCode == Keys.NumPad1)
+            {
+                Ped[] peds = World.GetNearbyPeds(player, 200);
+                foreach(Ped ped in peds)
+                {
+                    ped.Delete();
+                }
+            }
         }
 
         private void StealClosestVehicle(Ped ped)
@@ -157,8 +179,12 @@ namespace GtaVFirstMode
                 {
                     if (!vehicle.Equals(ped.VehicleTryingToEnter))
                     {
+                        LoggerUtil.logInfo(ped, "was allowed to steal vehciel: " + vehicle.GetHashCode());
                         AddVehicleToPedTryingToEnterVehicles(ped, vehicle);
                         ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30, EnterVehicleFlags.AllowJacking);
+                        LoggerUtil.logInfo(ped, "Is entering vehicle: " + vehicle.GetHashCode());
+
+
                     }
                     break;
                         
@@ -173,9 +199,11 @@ namespace GtaVFirstMode
             {
                 tryingToEnterVehclesWithPeds.Remove(tryingToEnterVehclesWithPeds[ped]);
                 tryingToEnterVehclesWithPeds.Remove(ped);
+                LoggerUtil.logInfo(ped, "removed vehicle from tryingToEnterVehclesWithPeds");
             }
             tryingToEnterVehclesWithPeds.Add(ped, vehicle);
             tryingToEnterVehclesWithPeds.Add(vehicle, ped);
+            LoggerUtil.logInfo(ped, "Added this vehicle to tryingToEnterVehclesWithPeds: " + vehicle.GetHashCode());
         }
 
         private bool isPedAllowedToStealVehicle(Ped ped, Vehicle vehicle)

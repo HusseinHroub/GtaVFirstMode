@@ -1,5 +1,6 @@
 ﻿using GTA;
 using GTA.Math;
+using GtaVFirstMode.utilites;
 using System;
 using System.Collections;
 
@@ -23,6 +24,7 @@ namespace GtaVFirstMode
             peds.Add(ped);
             player.PedGroup.Add(ped, false);
             setPedCharatersitcs(ped);
+            LoggerUtil.logInfo("Created ped with hashcode of: " + ped.GetHashCode());
             return ped;
         }
 

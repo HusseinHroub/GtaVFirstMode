@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
 using GTA;
+using GTA.UI;
 using System.Collections;
 using GtaVFirstMode.utilites;
 using System.Collections.Generic;
+using System.Drawing;
+using GTA.Native;
+using GTA.Math;
 
 namespace GtaVFirstMode
 {
@@ -29,18 +33,57 @@ namespace GtaVFirstMode
 
         private void tick(object sender, EventArgs e)
         {
-            i++;
-            waitingTimeForSorting++;
-            if ( i > 1)
+            try
             {
-                i = 0;
-                pedsAndVehicleManagment.removeVehicaleIfTakenByPlayer();
-                PedsDriveOnPlayerDrive();
-                //RemoveAllNotRelatedVehicles();
+                i++;
+                waitingTimeForSorting++;
+                if (i > 1)
+                {
+                    i = 0;
+                    pedsAndVehicleManagment.removeVehicaleIfTakenByPlayer();
+                    PedsDriveOnPlayerDrive();
+                    //RemoveAllNotRelatedVehicles();
+                }
+
+                DrawPedHashCodeOnTop();
             }
-
-
+            catch (Exception exc)
+            {
+                Notification.Show("An exception happened of type: " + exc.Message);
+                Notification.Show("An exception happened of source: " + exc.Source);
+                LoggerUtil.logInfo("An exception happened while running the mod: " + exc.Message);
+                LoggerUtil.logInfo(exc.Source);
+                LoggerUtil.logInfo(exc.StackTrace);
+            }
+            
+            
         }
+
+        private void DrawPedHashCodeOnTop()
+        {
+            if(LoggerUtil.logsEnabled)
+            {
+                foreach (Ped ped in pedCreationManagment.getPeds())
+                {
+                    DrawPedIdOnPed(ped);
+                }
+            }            
+        }
+
+        private static void DrawPedIdOnPed(Ped ped)
+        {
+            if (ped.IsOnScreen)
+            {
+                PointF pointF = GTA.UI.Screen.WorldToScreen(ped.AbovePosition);
+                if(pointF.X != 0 && pointF.Y != 0)
+                {
+                    TextElement textElemntu = new TextElement("" + ped.GetHashCode(), pointF , 0.4f, Color.DarkRed);
+                    textElemntu.Enabled = true;
+                    textElemntu.Draw();
+                }
+            }
+        }
+
         private void RemoveAllNotRelatedVehicles()
         {
             foreach (Vehicle v in World.GetAllVehicles())
@@ -101,6 +144,7 @@ namespace GtaVFirstMode
             StealClosestVehicle(ped);
             if (IsPedAlloedToAssignVehicle(ped))
             {
+                LoggerUtil.logInfo(ped, "Ped is allowed to assign a vehicle...");
                 pedsAndVehicleManagment.addVehicaleAndAssignItToPed(ped, (Vehicle) tryingToEnterVehclesWithPeds[ped]);
                 if (ped.VehicleTryingToEnter.Driver != null)
                 {
@@ -147,10 +191,9 @@ namespace GtaVFirstMode
             }
             else if(e.KeyCode == Keys.NumPad6)
             {
-                foreach(Ped ped in pedCreationManagment.getPeds())
-                {
-                    StealClosestVehicle(ped);
-                }
+                var pos = new PointF(0f, 0f);
+                TextElement textElemntu = new TextElement("Hello", pos, 5f, Color.White);
+                textElemntu.Enabled = true;
             }
             else if (e.KeyCode == Keys.NumPad5)
             {

@@ -6,8 +6,6 @@ using System.Collections;
 using GtaVFirstMode.utilites;
 using System.Collections.Generic;
 using System.Drawing;
-using GTA.Native;
-using GTA.Math;
 
 namespace GtaVFirstMode
 {
@@ -16,6 +14,7 @@ namespace GtaVFirstMode
         private PedCreationManagment pedCreationManagment;
         private PedsAndVehicleManagment pedsAndVehicleManagment;
         Hashtable tryingToEnterVehclesWithPeds = new Hashtable();
+        Hashtable closestVehicleCache = new Hashtable();
         int i = 0;
         int waitingTimeForSorting = 0;
         Ped player;
@@ -119,9 +118,36 @@ namespace GtaVFirstMode
 
         private void ForcePedToDriveAVehicle(Ped ped)
         {
-            if (IfNoVehicleToDrive(ped) && waitingTimeForSorting > 200)
+            if (IfNoVehicleToDrive(ped))
             {
-                StealVhiecleAndAssignIt(ped);
+                stealAndAssignOnceGettingIntoVehicle(ped);
+            }
+
+        }
+
+        private void stealAndAssignOnceGettingIntoVehicle(Ped ped)
+        {
+            
+            StealVhiecleAndAssignIt(ped);
+            assignPedToAlloedVehicleIfHeGettingInto(ped);
+        }
+
+        private void assignPedToAlloedVehicleIfHeGettingInto(Ped ped)
+        {
+            if (IsPedAlloedToAssignVehicle(ped))
+            {
+                LoggerUtil.logInfo(ped, "Ped is allowed to assign a vehicle...");
+                Vehicle vehicle = (Vehicle)tryingToEnterVehclesWithPeds[ped];
+                pedsAndVehicleManagment.addVehicaleAndAssignItToPed(ped, vehicle);
+                closestVehicleCache.Remove(ped);
+                if (vehicle.Driver != null)
+                {
+                    vehicle.Driver.Delete();
+                    ped.SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                    LoggerUtil.logInfo(ped, "Driver should leave vehicle then flee from the ped!");
+
+                }
+
             }
         }
 
@@ -140,25 +166,24 @@ namespace GtaVFirstMode
 
         private void StealVhiecleAndAssignIt(Ped ped)
         {
+            List<Vehicle> closestVehiclesToPed = getClosestVehiclesToPed(ped);
             LoggerUtil.logInfo(ped, "Starting stealing some vehicles!");
-            StealClosestVehicle(ped);
-            if (IsPedAlloedToAssignVehicle(ped))
+            StealClosestVehicle(ped, closestVehiclesToPed);
+        }
+
+        private List<Vehicle> getClosestVehiclesToPed(Ped ped)
+        {
+            if(waitingTimeForSorting > 200)
             {
-                LoggerUtil.logInfo(ped, "Ped is allowed to assign a vehicle...");
-                pedsAndVehicleManagment.addVehicaleAndAssignItToPed(ped, (Vehicle) tryingToEnterVehclesWithPeds[ped]);
-                if (ped.VehicleTryingToEnter.Driver != null)
-                {
-                    ped.VehicleTryingToEnter.Driver.Task.FleeFrom(ped);
-                    LoggerUtil.logInfo(ped, "Driver should flee from the ped!");
-
-                }
-
+                closestVehicleCache.Remove(ped);
+                closestVehicleCache.Add(ped, VehicleUtilty.getClosestVehiclesToPed(ped));
             }
+            return closestVehicleCache.Contains(ped) ? (List<Vehicle>) closestVehicleCache[ped] : new List<Vehicle>();
         }
 
         private bool IsPedAlloedToAssignVehicle(Ped ped)
         {
-            return ped.IsGettingIntoVehicle && ped.VehicleTryingToEnter != null && !player.Equals(ped.VehicleTryingToEnter.Driver);
+            return ped.IsGettingIntoVehicle && (Vehicle)tryingToEnterVehclesWithPeds[ped] != null && !player.Equals(ped.VehicleTryingToEnter.Driver);
         }
 
         private float distanceStraight(Ped ped)
@@ -188,6 +213,8 @@ namespace GtaVFirstMode
             {
                 pedCreationManagment.deleteAllPeds();
                 pedsAndVehicleManagment.deleteAllVehicales();
+                tryingToEnterVehclesWithPeds.Clear();
+                closestVehicleCache.Clear();
             }
             else if(e.KeyCode == Keys.NumPad6)
             {
@@ -213,9 +240,8 @@ namespace GtaVFirstMode
             }
         }
 
-        private void StealClosestVehicle(Ped ped)
+        private void StealClosestVehicle(Ped ped, List<Vehicle> closestVehiclesToPed)
         {
-            List<Vehicle> closestVehiclesToPed = VehicleUtilty.getClosestVehiclesToPed(ped);
             foreach (Vehicle vehicle in closestVehiclesToPed)
             {
                 if (isPedAllowedToStealVehicle(ped, vehicle))

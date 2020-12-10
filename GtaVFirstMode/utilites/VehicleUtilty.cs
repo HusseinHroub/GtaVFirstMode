@@ -25,6 +25,19 @@ namespace GtaVFirstMode.utilites
             LoggerUtil.logInfo("Created vehcile that has hashCode: " + vehicle.GetHashCode());
             return vehicle;
         }
+        
+        public static Vehicle createForwardVehicle()
+        {
+            Vehicle vehicle = World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading);
+            float speed = 10000;
+            vehicle.Speed = speed;
+            vehicle.ForwardSpeed = speed;
+            vehicle.HeliBladesSpeed = speed;
+            
+            LoggerUtil.logInfo("Created forward vehicle!");
+            vehicle.MarkAsNoLongerNeeded();
+            return vehicle;
+        }
         public static void makePedToLeaveVehicle(Ped ped)
         {
             if (ped.IsInVehicle())

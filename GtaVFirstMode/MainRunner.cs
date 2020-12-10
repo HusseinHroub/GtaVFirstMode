@@ -49,7 +49,6 @@ namespace GtaVFirstMode
             catch (Exception exc)
             {
                 Notification.Show("An exception happened of type: " + exc.Message);
-                Notification.Show("An exception happened of source: " + exc.Source);
                 LoggerUtil.logInfo("An exception happened while running the mod: " + exc.Message);
                 LoggerUtil.logInfo(exc.Source);
                 LoggerUtil.logInfo(exc.StackTrace);
@@ -237,6 +236,10 @@ namespace GtaVFirstMode
                 {
                     ped.Delete();
                 }
+            }
+            else if (e.KeyCode == Keys.NumPad2)
+            {
+                VehicleUtilty.createForwardVehicle();
             }
         }
 

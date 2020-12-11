@@ -72,17 +72,27 @@ namespace GtaVFirstMode
             {
                 Vector3 targetPostion = Game.Player.TargetedEntity.Position;
                 Vector3 playerPosition = player.Position;
-                float power = 2f;
-                float x = (playerPosition.X - targetPostion.X) > 1 ? power : -power;
-                float y = (playerPosition.Y - targetPostion.Y) > 1 ? power : -power;
-                float z = (playerPosition.Z - targetPostion.Z) > 1 ? power : -power;
+                float power = 1f;
+                float x = getPowerDirection(playerPosition.X , targetPostion.X, power);
+                float y =  getPowerDirection(playerPosition.Y , targetPostion.Y, power);
+                float z =  getPowerDirection(playerPosition.Z , targetPostion.Z, power);
                 UIUtils.showSubTitle(String.Format("X: {0}, Y: {1}, Z: {2}",
                     playerPosition.X - targetPostion.X,
                     playerPosition.Y - targetPostion.Y,
                     playerPosition.Z - targetPostion.Z));
-                Game.Player.TargetedEntity.ApplyForce(new Vector3(x, y, z));
+                Game.Player.TargetedEntity.ApplyForce(new Vector3(x, y, z), Vector3.Zero, ForceType.MaxForceRot);
+                
                 
             }
+        }
+        private float getPowerDirection(float playerDirction, float targetDirection, float desiredPower)
+        {
+            var subResult = playerDirction - targetDirection;
+            if ((int)subResult > 0)
+                return desiredPower;
+            if ((int)subResult < 0)
+                return -desiredPower;
+            return  0;
         }
         
         private void DrawVehicleSpeedStatsPlayerDriving()

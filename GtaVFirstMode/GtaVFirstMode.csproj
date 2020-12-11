@@ -70,6 +70,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntityGrabber.cs" />
+    <Compile Include="EntityWithLastPosition.cs" />
     <Compile Include="MainRunner.cs" />
     <Compile Include="PedManagment.cs" />
     <Compile Include="PedsAndVehicleManagment.cs" />

@@ -16,6 +16,7 @@ namespace GtaVFirstMode
         private PedsAndVehicleManagment pedsAndVehicleManagment;
         Hashtable tryingToEnterVehclesWithPeds = new Hashtable();
         Hashtable closestVehicleCache = new Hashtable();
+        private EntityGrabber entityGrabber;
         int i = 0;
         int waitingTimeForSorting = 0;
         Ped player;
@@ -27,6 +28,7 @@ namespace GtaVFirstMode
             VehicleUtilty.player = player;
             pedCreationManagment = new PedCreationManagment(player);
             pedsAndVehicleManagment = new PedsAndVehicleManagment(player);
+            entityGrabber = new EntityGrabber(player);
             KeyDown += onKeyDown;
             Tick += tick;
             
@@ -63,37 +65,15 @@ namespace GtaVFirstMode
 
         private void pedDestroyJackerOnceDamaged()
         {
-            if (player.MeleeTarget != null)
-            {
-                player.MeleeTarget.ApplyForceRelative(new Vector3(0, -5f, 0));
-            }
-
             if (Game.Player.TargetedEntity != null)
             {
-                Vector3 targetPostion = Game.Player.TargetedEntity.Position;
-                Vector3 playerPosition = player.Position;
-                float power = 1f;
-                float x = getPowerDirection(playerPosition.X , targetPostion.X, power);
-                float y =  getPowerDirection(playerPosition.Y , targetPostion.Y, power);
-                float z =  getPowerDirection(playerPosition.Z , targetPostion.Z, power);
-                UIUtils.showSubTitle(String.Format("X: {0}, Y: {1}, Z: {2}",
-                    playerPosition.X - targetPostion.X,
-                    playerPosition.Y - targetPostion.Y,
-                    playerPosition.Z - targetPostion.Z));
-                Game.Player.TargetedEntity.ApplyForce(new Vector3(x, y, z), Vector3.Zero, ForceType.MaxForceRot);
-                
+                entityGrabber.addEntity(new EntityWithLastPosition(Game.Player.TargetedEntity));
                 
             }
+            entityGrabber.forceEntitiesToPlayerPosition();
+            UIUtils.showNotification("size is: " + entityGrabber.getSizeOfEntitiesHeld());
         }
-        private float getPowerDirection(float playerDirction, float targetDirection, float desiredPower)
-        {
-            var subResult = playerDirction - targetDirection;
-            if ((int)subResult > 0)
-                return desiredPower;
-            if ((int)subResult < 0)
-                return -desiredPower;
-            return  0;
-        }
+        
         
         private void DrawVehicleSpeedStatsPlayerDriving()
         {

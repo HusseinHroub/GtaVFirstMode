@@ -6,6 +6,7 @@ using System.Collections;
 using GtaVFirstMode.utilites;
 using System.Collections.Generic;
 using System.Drawing;
+using GTA.Math;
 
 namespace GtaVFirstMode
 {
@@ -28,6 +29,7 @@ namespace GtaVFirstMode
             pedsAndVehicleManagment = new PedsAndVehicleManagment(player);
             KeyDown += onKeyDown;
             Tick += tick;
+            
         }
 
         private void tick(object sender, EventArgs e)
@@ -45,6 +47,8 @@ namespace GtaVFirstMode
                 }
 
                 DrawPedHashCodeOnTop();
+                DrawVehicleSpeedStatsPlayerDriving();
+                pedDestroyJackerOnceDamaged();
             }
             catch (Exception exc)
             {
@@ -55,6 +59,67 @@ namespace GtaVFirstMode
             }
             
             
+        }
+
+        private void pedDestroyJackerOnceDamaged()
+        {
+            if (player.MeleeTarget != null)
+            {
+                player.MeleeTarget.ApplyForceRelative(new Vector3(0, -5f, 0));
+            }
+
+            if (Game.Player.TargetedEntity != null)
+            {
+                Vector3 targetPostion = Game.Player.TargetedEntity.Position;
+                Vector3 playerPosition = player.Position;
+                float power = 2f;
+                float x = (playerPosition.X - targetPostion.X) > 1 ? power : -power;
+                float y = (playerPosition.Y - targetPostion.Y) > 1 ? power : -power;
+                float z = (playerPosition.Z - targetPostion.Z) > 1 ? power : -power;
+                UIUtils.showSubTitle(String.Format("X: {0}, Y: {1}, Z: {2}",
+                    playerPosition.X - targetPostion.X,
+                    playerPosition.Y - targetPostion.Y,
+                    playerPosition.Z - targetPostion.Z));
+                Game.Player.TargetedEntity.ApplyForce(new Vector3(x, y, z));
+                
+            }
+        }
+        
+        private void DrawVehicleSpeedStatsPlayerDriving()
+        {
+            Vehicle vehicle = player.CurrentVehicle;
+            if (vehicle != null)
+            {
+                string speedStats = String.Format("wheelSpeed: {0}, accelration: {1}, clutch: {2}, currentGear: {3}, speed: {4}, bhealth: {5}",
+                    (int)vehicle.WheelSpeed,
+                    vehicle.Acceleration,
+                    vehicle.Clutch,
+                    vehicle.CurrentGear,
+                    (int)vehicle.Speed,
+                    vehicle.BodyHealth );
+                UIUtils.showSubTitle(speedStats);
+                if (Game.IsKeyPressed(Keys.W))
+                {
+                    //vehicle.ForwardSpeed = vehicle.Speed + 20f;
+                    vehicle.ApplyForceRelative(new Vector3(0, 1f, 0));
+                    
+                } 
+                else if (Game.IsKeyPressed(Keys.S))
+                {
+                    //vehicle.ApplyForceRelative(new Vector3(0, -1.5f, 0));
+                    if (vehicle.Speed > 10 && vehicle.Acceleration > -1)
+                    {
+                        vehicle.ForwardSpeed = 1;    
+                    }
+
+                }
+
+                if (vehicle.BodyHealth < 1000)
+                {
+                    vehicle.BodyHealth = 1000;
+                }
+                
+            }
         }
 
         private void DrawPedHashCodeOnTop()
@@ -199,6 +264,8 @@ namespace GtaVFirstMode
         {
             player = Game.Player.Character;
             player.PedGroup.Formation = Formation.Default;
+            player.HealthFloat = 10000;
+            Game.Player.SetRunSpeedMultThisFrame(30);
         }
 
         private void onKeyDown(object sender, KeyEventArgs e)
@@ -256,7 +323,6 @@ namespace GtaVFirstMode
                         ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30, EnterVehicleFlags.AllowJacking);
                         LoggerUtil.logInfo(ped, "Is entering vehicle: " + vehicle.GetHashCode());
 
-
                     }
                     break;
                         
@@ -288,7 +354,6 @@ namespace GtaVFirstMode
 
         private void InitSetup()
         {
-            Game.Player.SetRunSpeedMultThisFrame(30);
             Game.Player.WantedLevel = 0;
         }
 

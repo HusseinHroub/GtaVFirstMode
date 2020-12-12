@@ -67,11 +67,26 @@ namespace GtaVFirstMode
         {
             if (Game.Player.TargetedEntity != null)
             {
-                entityGrabber.addEntity(new EntityWithLastPosition(Game.Player.TargetedEntity));
+                if(Game.Player.TargetedEntity is Ped)
+                {
+                    Ped ped = (Ped) Game.Player.TargetedEntity;
+                    if (ped.CurrentVehicle != null)
+                    {
+                        entityGrabber.addEntity(new EntityWithLastPosition(ped.CurrentVehicle));                        
+                    }
+                    else
+                    {
+                        entityGrabber.addEntity(new EntityWithLastPosition(ped));
+                    }
+                }
+                else
+                {
+                    entityGrabber.addEntity(new EntityWithLastPosition(Game.Player.TargetedEntity));    
+                }
+                
                 
             }
             entityGrabber.forceEntitiesToPlayerPosition();
-            UIUtils.showNotification("size is: " + entityGrabber.getSizeOfEntitiesHeld());
         }
         
         

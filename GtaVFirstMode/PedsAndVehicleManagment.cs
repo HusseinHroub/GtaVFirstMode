@@ -73,11 +73,13 @@ namespace GtaVFirstMode
                 LoggerUtil.logInfo(ped, "Ped own vehicle: " + vehicle.GetHashCode() + " and will drive.");
                 if (ped.IsInVehicle())
                 {
-                    ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver);
+                    LoggerUtil.logInfo(ped, "Ped is inVehicle, so EnterVehicle task is invoked, and drive to is invoked");
+                    ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30);
                     VehicleUtilty.DrivePedBehindPlayer(ped, vehicle);
                 }
-                else if (ped.VehicleTryingToEnter == null)
+                else if (!vehicle.Equals(ped.VehicleTryingToEnter))
                 {
+                    LoggerUtil.logInfo(ped, "Ped trying to enter vehicle is null, making him to enter vehicle");
                     ped.Task.EnterVehicle(vehicle, VehicleSeat.Driver, -1, 30);
                 }
                 return true;
@@ -99,9 +101,13 @@ namespace GtaVFirstMode
 
         public void addVehicaleAndAssignItToPed(Ped ped, Vehicle currentVehicle)
         {
-            LoggerUtil.logInfo(ped, "Addeing vehicle to ped: " + currentVehicle.GetHashCode());
-            vehicles.Add(currentVehicle);
-            assignPedToVehicle(ped, currentVehicle);
+            if(currentVehicle != null)
+            {
+                LoggerUtil.logInfo(ped, "Addeing vehicle to ped: " + currentVehicle.GetHashCode());
+                vehicles.Add(currentVehicle);
+                assignPedToVehicle(ped, currentVehicle);
+            }
+            
         }
 
         public void removeVehicaleIfTakenByPlayer()

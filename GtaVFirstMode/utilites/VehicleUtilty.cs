@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using GTA;
 using GTA.Math;
@@ -22,7 +23,24 @@ namespace GtaVFirstMode.utilites
         public static Vehicle createVehicle()
         {
             Vehicle vehicle = World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading - 180);
+            vehicle.CanBeVisiblyDamaged = false;
+            vehicle.Mods.LicensePlate = "Hussein";
+            vehicle.Mods.WheelType = VehicleWheelType.Sport;
             LoggerUtil.logInfo("Created vehcile that has hashCode: " + vehicle.GetHashCode());
+            vehicle.MaxSpeed = 1000;
+            return vehicle;
+        }
+        
+        public static Vehicle createForwardVehicle()
+        {
+            Vehicle vehicle = World.CreateVehicle(VehicleHash.Adder, player.GetOffsetPosition(new Vector3(0, 7, 0)), player.Heading);
+            float speed = 10000;
+            vehicle.Speed = speed;
+            vehicle.ForwardSpeed = speed;
+            vehicle.HeliBladesSpeed = speed;
+            
+            LoggerUtil.logInfo("Created forward vehicle!");
+            vehicle.MarkAsNoLongerNeeded();
             return vehicle;
         }
         public static void makePedToLeaveVehicle(Ped ped)

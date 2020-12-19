@@ -1,5 +1,6 @@
 ﻿using GTA;
 using GTA.Math;
+using GtaVFirstMode.utilites;
 
 namespace GtaVFirstMode
 {
@@ -12,7 +13,7 @@ namespace GtaVFirstMode
         public EntityWithLastPosition(Entity entity)
         {
             this.entity = entity;
-            this.lastKnownPosition = entity.Position;
+            updateLastPosition();
         }
 
         public bool isFrozen()
@@ -20,8 +21,10 @@ namespace GtaVFirstMode
             if (attemptsToReCheck-- < 0)
             {
                 attemptsToReCheck = 200;
-                return lastKnownPosition.Equals(entity.Position);
-
+                bool isFrozen = lastKnownPosition.Equals(entity.Position);
+                updateLastPosition();
+                LoggerUtil.logInfo("is frzeon: " + isFrozen);
+                return isFrozen;
             }
             return false;
         }

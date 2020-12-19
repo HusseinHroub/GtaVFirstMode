@@ -34,11 +34,11 @@ namespace GtaVFirstMode
             List<EntityWithLastPosition> toBeRemovedFromSet = new List<EntityWithLastPosition>();
             foreach (EntityWithLastPosition entityWithLastPosition in entitySet.Keys)
             {
-                entityWithLastPosition.updateLastPosition();
                 applyForceToEntityIntoPlayerDirection(entityWithLastPosition.getEntity());
                 removeFromSetIfCloseEnoughToPlayer(entityWithLastPosition, toBeRemovedFromSet);
                 if (entityWithLastPosition.isFrozen())
                 {
+                    LoggerUtil.logInfo("Entity is frozen there fore it will be removed :)");
                     toBeRemovedFromSet.Add(entityWithLastPosition);
                 }
                 
@@ -46,10 +46,7 @@ namespace GtaVFirstMode
 
             foreach (var entityWithLastPosition in toBeRemovedFromSet)
             {
-                LoggerUtil.logInfo("Hashcode of entity trynna to remove: "+ entityWithLastPosition.GetHashCode());
-                LoggerUtil.logInfo("Size before removing: "+ getSizeOfEntitiesHeld());
                 entitySet.Remove(entityWithLastPosition);
-                LoggerUtil.logInfo("set size after removing: " + getSizeOfEntitiesHeld());
             }
 
         }
@@ -62,6 +59,7 @@ namespace GtaVFirstMode
             {
                 entityWithLastPosition.getEntity().Speed = 0;
                 toBeRemovedFromSet.Add(entityWithLastPosition);
+                LoggerUtil.logInfo("Entity is close enough to palyer so it will be removed :)");
             }
         }
 
@@ -78,9 +76,9 @@ namespace GtaVFirstMode
       
         }
         
-        private float getPowerDirection(float playerDirction, float targetDirection, float desiredPower)
+        private float getPowerDirection(float playerAxisValue, float targetAxisValue, float desiredPower)
         {
-            var subResult = playerDirction - targetDirection;
+            var subResult = playerAxisValue - targetAxisValue;
             if ((int)subResult > 0)
                 return desiredPower;
             if ((int)subResult < 0)

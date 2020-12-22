@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GTA;
 using GTA.Math;
 using GtaVFirstMode.utilites;
+using log4net.Repository.Hierarchy;
 
 namespace GtaVFirstMode
 {
@@ -15,22 +16,20 @@ namespace GtaVFirstMode
         public EntityGrabber(Ped player)
         {
             this.player = player;
-            entitySet =new Hashtable();
+            entitySet = new Hashtable();
         }
 
         public void addEntity(EntityWithLastPosition entityWithLastPosition)
         {
-          
-
             if (!entitySet.Contains(entityWithLastPosition))
             {
-                LoggerUtil.logInfo("Added an item with hash code in entity: " + entityWithLastPosition.GetHashCode());
                 entitySet.Add(entityWithLastPosition, 1);
             }
         }
 
         public void forceEntitiesToPlayerPosition()
         {
+            // LoggerUtil.logInfo("Size of entites in grabber: " + getSizeOfEntitiesHeld());
             List<EntityWithLastPosition> toBeRemovedFromSet = new List<EntityWithLastPosition>();
             foreach (EntityWithLastPosition entityWithLastPosition in entitySet.Keys)
             {
@@ -38,17 +37,14 @@ namespace GtaVFirstMode
                 removeFromSetIfCloseEnoughToPlayer(entityWithLastPosition, toBeRemovedFromSet);
                 if (entityWithLastPosition.isFrozen())
                 {
-                    LoggerUtil.logInfo("Entity is frozen there fore it will be removed :)");
                     toBeRemovedFromSet.Add(entityWithLastPosition);
                 }
-                
             }
 
             foreach (var entityWithLastPosition in toBeRemovedFromSet)
             {
                 entitySet.Remove(entityWithLastPosition);
             }
-
         }
 
         private void removeFromSetIfCloseEnoughToPlayer(EntityWithLastPosition entityWithLastPosition,
@@ -58,8 +54,9 @@ namespace GtaVFirstMode
                 DISTANCE_RANGE_FOR_CLOSEST)
             {
                 entityWithLastPosition.getEntity().Speed = 0;
+                entityWithLastPosition.getEntity().Velocity = Vector3.Zero;
+
                 toBeRemovedFromSet.Add(entityWithLastPosition);
-                LoggerUtil.logInfo("Entity is close enough to palyer so it will be removed :)");
             }
         }
 
@@ -68,22 +65,26 @@ namespace GtaVFirstMode
             Vector3 targetPostion = entity.Position;
             Vector3 playerPosition = player.Position;
             float power = 1f;
-            float x = getPowerDirection(playerPosition.X , targetPostion.X, power);
-            float y =  getPowerDirection(playerPosition.Y , targetPostion.Y, power);
-            float z =  getPowerDirection(playerPosition.Z , targetPostion.Z, power);
-                
+            float x = getPowerDirection(playerPosition.X, targetPostion.X, power);
+            float y = getPowerDirection(playerPosition.Y, targetPostion.Y, power);
+            float z = getPowerDirection(playerPosition.Z, targetPostion.Z, power);
+            if (z < 0 && entity.HeightAboveGround < 1.6)
+            {
+                z = 0;
+            }
+
+            LoggerUtil.logInfo("Z power direction for this entity: " + z);
             entity.ApplyForce(new Vector3(x, y, z), Vector3.Zero, ForceType.MaxForceRot);
-      
         }
-        
+
         private float getPowerDirection(float playerAxisValue, float targetAxisValue, float desiredPower)
         {
-            var subResult = playerAxisValue - targetAxisValue;
-            if ((int)subResult > 0)
-                return desiredPower;
-            if ((int)subResult < 0)
-                return -desiredPower;
-            return  0;
+            var powerValue = playerAxisValue - targetAxisValue;
+            if (powerValue > desiredPower)
+                powerValue = desiredPower;
+            else if (powerValue < -desiredPower)
+                powerValue = -desiredPower;
+            return powerValue;
         }
 
         public int getSizeOfEntitiesHeld()

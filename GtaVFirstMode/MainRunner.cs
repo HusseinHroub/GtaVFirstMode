@@ -271,6 +271,8 @@ namespace GtaVFirstMode
             player.PedGroup.Formation = Formation.Default;
             player.HealthFloat = 10000;
             Game.Player.SetRunSpeedMultThisFrame(30);
+            player.CanSufferCriticalHits = false;
+            
         }
 
         private void onKeyDown(object sender, KeyEventArgs e)

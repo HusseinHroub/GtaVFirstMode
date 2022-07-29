@@ -11,27 +11,30 @@ namespace GtaVFirstMode
     {
         private Ped player;
         private int DISTANCE_RANGE_FOR_CLOSEST = 12;
-        private Hashtable entitySet;
+        Dictionary<int, EntityWithLastPosition> dict;
 
         public EntityGrabber(Ped player)
         {
             this.player = player;
-            entitySet = new Hashtable();
+            dict  = new Dictionary<int, EntityWithLastPosition>();
         }
 
         public void addEntity(EntityWithLastPosition entityWithLastPosition)
         {
-            if (!entitySet.Contains(entityWithLastPosition))
+            
+            if (!dict.ContainsKey(entityWithLastPosition.getEntity().Handle))
             {
-                entitySet.Add(entityWithLastPosition, 1);
+                LoggerUtil.logInfo("Adding EntityWithLastPosition.Handle " + entityWithLastPosition.getEntity().Handle);
+                dict.Add(entityWithLastPosition.getEntity().Handle, entityWithLastPosition);
+                LoggerUtil.logInfo("Size: " + dict.Count);
             }
         }
 
         public void forceEntitiesToPlayerPosition()
         {
-            // LoggerUtil.logInfo("Size of entites in grabber: " + getSizeOfEntitiesHeld());
+            LoggerUtil.logInfo("Size of entites in grabber: " + getSizeOfEntitiesHeld());
             List<EntityWithLastPosition> toBeRemovedFromSet = new List<EntityWithLastPosition>();
-            foreach (EntityWithLastPosition entityWithLastPosition in entitySet.Keys)
+            foreach (EntityWithLastPosition entityWithLastPosition in dict.Values)
             {
                 applyForceToEntityIntoPlayerDirection(entityWithLastPosition.getEntity());
                 removeFromSetIfCloseEnoughToPlayer(entityWithLastPosition, toBeRemovedFromSet);
@@ -43,7 +46,8 @@ namespace GtaVFirstMode
 
             foreach (var entityWithLastPosition in toBeRemovedFromSet)
             {
-                entitySet.Remove(entityWithLastPosition);
+                dict.Remove(entityWithLastPosition.getEntity().Handle);
+                LoggerUtil.logInfo("Removed: ");
             }
         }
 
@@ -73,7 +77,7 @@ namespace GtaVFirstMode
                 z = 0;
             }
 
-            LoggerUtil.logInfo("Z power direction for this entity: " + z);
+            //LoggerUtil.logInfo("Z power direction for this entity: " + z);
             entity.ApplyForce(new Vector3(x, y, z), Vector3.Zero, ForceType.MaxForceRot);
         }
 
@@ -89,7 +93,7 @@ namespace GtaVFirstMode
 
         public int getSizeOfEntitiesHeld()
         {
-            return entitySet.Count;
+            return dict.Count;
         }
     }
 }

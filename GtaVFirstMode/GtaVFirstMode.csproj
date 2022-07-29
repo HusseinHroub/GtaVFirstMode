@@ -54,10 +54,7 @@
       <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
     </Reference>
     <Reference Include="ScriptHookVDotNet3">
-      <HintPath>D:\GTAV development\library\ScriptHookVDotNet3.dll</HintPath>
-    </Reference>
-    <Reference Include="ScriptHookVDotNet3, Version=3.0.4.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\GTAV mod basic files\ScriptHookVDotNet3.dll</HintPath>
+      <HintPath>D:\EpicGames\GTAV\ScriptHookVDotNet3.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

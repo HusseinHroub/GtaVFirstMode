@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using GTA;
 using GTA.Math;
@@ -24,15 +25,12 @@ namespace GtaVFirstMode
             
             if (!dict.ContainsKey(entityWithLastPosition.getEntity().Handle))
             {
-                LoggerUtil.logInfo("Adding EntityWithLastPosition.Handle " + entityWithLastPosition.getEntity().Handle);
                 dict.Add(entityWithLastPosition.getEntity().Handle, entityWithLastPosition);
-                LoggerUtil.logInfo("Size: " + dict.Count);
             }
         }
 
         public void forceEntitiesToPlayerPosition()
         {
-            LoggerUtil.logInfo("Size of entites in grabber: " + getSizeOfEntitiesHeld());
             List<EntityWithLastPosition> toBeRemovedFromSet = new List<EntityWithLastPosition>();
             foreach (EntityWithLastPosition entityWithLastPosition in dict.Values)
             {
@@ -47,7 +45,6 @@ namespace GtaVFirstMode
             foreach (var entityWithLastPosition in toBeRemovedFromSet)
             {
                 dict.Remove(entityWithLastPosition.getEntity().Handle);
-                LoggerUtil.logInfo("Removed: ");
             }
         }
 
@@ -68,6 +65,11 @@ namespace GtaVFirstMode
         {
             Vector3 targetPostion = entity.Position;
             Vector3 playerPosition = player.Position;
+
+
+            LoggerUtil.logInfo("playerPosition.X: " + playerPosition.X + ", targetPostion.X: " + targetPostion.X);
+            LoggerUtil.logInfo("playerPosition.Y: " + playerPosition.Y + ", targetPostion.Y: " + targetPostion.Y);
+
             float power = 1f;
             float x = getPowerDirection(playerPosition.X, targetPostion.X, power);
             float y = getPowerDirection(playerPosition.Y, targetPostion.Y, power);
@@ -77,18 +79,47 @@ namespace GtaVFirstMode
                 z = 0;
             }
 
-            //LoggerUtil.logInfo("Z power direction for this entity: " + z);
-            entity.ApplyForce(new Vector3(x, y, z), Vector3.Zero, ForceType.MaxForceRot);
+            //entity.Velocity = new Vector3(x, y, z);
+            entity.ApplyForce(new Vector3(x, y, z), Vector3.Zero, ForceType.MaxForceRot2);
+            LoggerUtil.logInfo("============");
+
+            /*LoggerUtil.logInfo("x: " + x);
+            LoggerUtil.logInfo("y: " + y);
+            LoggerUtil.logInfo("z: " + z);
+            
+          
+            LoggerUtil.logInfo("Speed: " + entity.Speed);
+            
+            LoggerUtil.logInfo("Position: " + entity.Position);
+            LoggerUtil.logInfo("LeftPosition: " + entity.LeftPosition);
+            LoggerUtil.logInfo("RightPosition: " + entity.RightPosition);
+            LoggerUtil.logInfo("FrontPosition: " + entity.FrontPosition);
+            LoggerUtil.logInfo("RearPosition: " + entity.RearPosition);*/
+
         }
 
         private float getPowerDirection(float playerAxisValue, float targetAxisValue, float desiredPower)
         {
-            var powerValue = playerAxisValue - targetAxisValue;
-            if (powerValue > desiredPower)
-                powerValue = desiredPower;
-            else if (powerValue < -desiredPower)
-                powerValue = -desiredPower;
-            return powerValue;
+            var diff = playerAxisValue - targetAxisValue;
+            if (diff > 0)
+            {
+                if (desiredPower > diff)
+                    return diff;
+                else
+                    return desiredPower;
+            }
+            else if (diff < 0)
+                if (desiredPower < diff)
+                    return diff;
+                else
+                    return -desiredPower;
+            else if (diff == 0)
+            {
+                return 0;
+            }
+
+            return diff;
+
         }
 
         public int getSizeOfEntitiesHeld()

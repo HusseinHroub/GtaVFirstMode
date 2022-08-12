@@ -32,6 +32,7 @@ namespace GtaVFirstMode
             KeyDown += onKeyDown;
             Tick += tick;
             
+            
         }
 
         private void tick(object sender, EventArgs e)
@@ -54,7 +55,7 @@ namespace GtaVFirstMode
             }
             catch (Exception exc)
             {
-                Notification.Show("An exception happened of type: " + exc.Message);
+                Notification.Show("SAn exception happened of type: " + exc.Message);
                 LoggerUtil.logInfo("An exception happened while running the mod: " + exc.Message);
                 LoggerUtil.logInfo(exc.Source);
                 LoggerUtil.logInfo(exc.StackTrace);
@@ -72,7 +73,7 @@ namespace GtaVFirstMode
                     Ped ped = (Ped) Game.Player.TargetedEntity;
                     if (ped.CurrentVehicle != null)
                     {
-                        entityGrabber.addEntity(new EntityWithLastPosition(ped.CurrentVehicle));                        
+                        entityGrabber.addEntity(new EntityWithLastPosition(ped.CurrentVehicle));
                     }
                     else
                     {
@@ -269,8 +270,10 @@ namespace GtaVFirstMode
         {
             player = Game.Player.Character;
             player.PedGroup.Formation = Formation.Default;
-            player.HealthFloat = 10000;
+            player.HealthFloat = 1000000000000000;
             Game.Player.SetRunSpeedMultThisFrame(30);
+            player.CanSufferCriticalHits = false;
+            
         }
 
         private void onKeyDown(object sender, KeyEventArgs e)

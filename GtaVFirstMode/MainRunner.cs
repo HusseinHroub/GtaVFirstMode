@@ -82,6 +82,7 @@ namespace GtaVFirstMode
                 }
                 else
                 {
+                    World.TransitionToWeather(Weather.Foggy, 1);
                     entityGrabber.addEntity(new EntityWithLastPosition(Game.Player.TargetedEntity));    
                 }
                 

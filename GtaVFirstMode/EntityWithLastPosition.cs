@@ -23,7 +23,6 @@ namespace GtaVFirstMode
                 attemptsToReCheck = 200;
                 bool isFrozen = lastKnownPosition.Equals(entity.Position);
                 updateLastPosition();
-                LoggerUtil.logInfo("is frzeon: " + isFrozen);
                 return isFrozen;
             }
             return false;

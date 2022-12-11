@@ -26,6 +26,7 @@ namespace GtaVFirstMode.utilites
             vehicle.CanBeVisiblyDamaged = false;
             vehicle.Mods.LicensePlate = "Hussein";
             vehicle.Mods.WheelType = VehicleWheelType.Sport;
+            vehicle.Mods.CustomPrimaryColor = System.Drawing.Color.Green;
             LoggerUtil.logInfo("Created vehcile that has hashCode: " + vehicle.GetHashCode());
             vehicle.MaxSpeed = 1000;
             return vehicle;

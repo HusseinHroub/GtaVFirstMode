@@ -269,7 +269,7 @@ namespace GtaVFirstMode
         private void InitPlayer()
         {
             player = Game.Player.Character;
-            player.PedGroup.Formation = Formation.Default;
+            player.PedGroup.Formation = Formation.Circle1;
             player.HealthFloat = 1000000000000000;
             Game.Player.SetRunSpeedMultThisFrame(30);
             player.CanSufferCriticalHits = false;
@@ -285,6 +285,7 @@ namespace GtaVFirstMode
             }
             else if (e.KeyCode == Keys.NumPad9)
             {
+                player.HealthFloat = 1000000000000000;
                 pedCreationManagment.deleteAllPeds();
                 pedsAndVehicleManagment.deleteAllVehicales();
                 tryingToEnterVehclesWithPeds.Clear();
